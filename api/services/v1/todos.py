@@ -5,6 +5,7 @@ from app.schemas.todos import TodoCreate, TodoUpdate, TodoResponse
 from app.database import get_db
 from typing import List
 
+
 def create_todo(todo: TodoCreate, db: Session = Depends(get_db)) -> TodoResponse:
     db_todo = Todo(**todo.dict())
     db.add(db_todo)
@@ -12,8 +13,10 @@ def create_todo(todo: TodoCreate, db: Session = Depends(get_db)) -> TodoResponse
     db.refresh(db_todo)
     return db_todo
 
+
 def get_todos(db: Session = Depends(get_db)) -> List[TodoResponse]:
     return db.query(Todo).all()
+
 
 def get_todo(todo_id: int, db: Session = Depends(get_db)) -> TodoResponse:
     todo = db.query(Todo).filter(Todo.id == todo_id).first()
@@ -21,7 +24,10 @@ def get_todo(todo_id: int, db: Session = Depends(get_db)) -> TodoResponse:
         raise HTTPException(status_code=404, detail="Todo not found")
     return todo
 
-def update_todo(todo_id: int, todo: TodoUpdate, db: Session = Depends(get_db)) -> TodoResponse:
+
+def update_todo(
+    todo_id: int, todo: TodoUpdate, db: Session = Depends(get_db)
+) -> TodoResponse:
     db_todo = db.query(Todo).filter(Todo.id == todo_id).first()
     if not db_todo:
         raise HTTPException(status_code=404, detail="Todo not found")
@@ -30,6 +36,7 @@ def update_todo(todo_id: int, todo: TodoUpdate, db: Session = Depends(get_db)) -
     db.commit()
     db.refresh(db_todo)
     return db_todo
+
 
 def delete_todo(todo_id: int, db: Session = Depends(get_db)) -> dict:
     db_todo = db.query(Todo).filter(Todo.id == todo_id).first()
